@@ -43,5 +43,12 @@ if uploaded_file is not None:
                 Question: {user_query}
                 """
         sql_query = generate_sql(prompt)
+        sql_query = sql_query.replace("```sql", "").replace("```", "").strip()
         st.subheader("Generated SQL")
         st.code(sql_query, language="sql")
+        try:
+            result_df = pd.read_sql_query(sql_query, conn)
+            st.subheader("Generated SQL Result")
+            st.dataframe(result_df)
+        except Exception as e:
+            st.error(f"Error executing SQL: {e}")
